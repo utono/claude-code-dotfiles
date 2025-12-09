@@ -1,14 +1,25 @@
 # Git Add, Commit, Push (gac)
 
-Perform git add, commit, and push for the following repositories:
+Perform git add, commit, and push for repositories.
 
-1. ~/utono/xc
-2. ~/utono/nvim-glosses
-3. ~/utono/nvim-glosses-qa
+## Arguments
+
+$ARGUMENTS - Optional: One or more repository paths (space-separated)
+
+## Behavior
+
+### If ARGUMENTS provided:
+Process only the specified repositories.
+
+### If no ARGUMENTS provided:
+1. Run `mr status` from `/home/mlj` to find repositories with uncommitted changes
+2. Parse the output to identify which repos have changes
+3. Process each repo with changes
+4. Then check all repos in `~/utono/` and process any with uncommitted changes
 
 ## Instructions
 
-For each repository:
+For each repository with changes:
 
 1. Check `git status` and `git diff` to see what files have changed
 2. **Keybind Documentation Check**: If any keybinds were added or changed:
@@ -28,3 +39,29 @@ For each repository:
 - Keep messages concise (1-2 sentences)
 - Focus on the "why" rather than the "what"
 - Each repo gets its own tailored commit message based on its changes
+
+## mr status Output Parsing
+
+The `mr status` command outputs sections like:
+```
+mr status: /path/to/repo
+<git status output>
+```
+
+Look for repos that show modified/untracked files in their status output.
+
+## Summary Output
+
+At the end, display a summary table showing:
+- Repository path
+- Changes committed
+- Push status
+
+**If `mr status` reported any errors** (e.g., missing directories, failed chdir),
+include them in the summary:
+```
+**mr status errors:**
+- /path/to/missing/repo: No such file or directory
+```
+
+This helps identify stale entries in `.mrconfig` that need removal.
