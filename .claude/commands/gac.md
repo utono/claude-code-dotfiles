@@ -11,6 +11,18 @@ $ARGUMENTS - Optional: One or more repository paths (space-separated)
 ### If ARGUMENTS provided:
 Process only the specified repositories.
 
+### Grouped Neovim Repositories
+If ANY of these paths are specified (symlink or target), process ALL of them:
+
+| Symlink | Target |
+|---------|--------|
+| `~/.config/nvim` | `~/utono/nvim-code` |
+| `~/.config/nvim-glosses` | `~/utono/nvim-glosses` |
+| `~/.config/nvim-glosses-qa` | `~/utono/nvim-glosses-qa` |
+| `~/.config/nvim-shared` | `~/utono/nvim-shared` |
+
+Example: `/gac ~/.config/nvim` processes all four repos above.
+
 ### If no ARGUMENTS provided:
 1. Run `mr status` from `/home/mlj` to find repositories with uncommitted changes
 2. Parse the output to identify which repos have changes
