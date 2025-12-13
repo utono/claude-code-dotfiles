@@ -2,10 +2,6 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Formatting Requirements
-
-* All markdown files (*.md) must be no greater than 80 characters wide
-
 ## AI Guidance
 
 ### Plan Mode
@@ -58,6 +54,89 @@ This project uses a structured memory bank system with specialized context files
 ### Memory Bank System Backups
 
 When asked to backup Memory Bank System files, you will copy the core context files above and @.claude settings directory to directory @/path/to/backup-directory. If files already exist in the backup directory, you will overwrite them.
+
+## Dotfiles Source Control
+
+Dotfiles in `~/.config/` and `~/.local/` that need source control should be managed via `~/tty-dotfiles/` using GNU Stow.
+
+### How it works
+
+1. Create package directory: `~/tty-dotfiles/<package-name>/`
+2. Mirror the target structure inside (relative to home directory):
+   - For `~/.config/foo/` → `~/tty-dotfiles/<package>/.config/foo/`
+   - For `~/.local/bin/bar/` → `~/tty-dotfiles/<package>/.local/bin/bar/`
+   - For `~/.local/share/baz/` → `~/tty-dotfiles/<package>/.local/share/baz/`
+3. Run `cd ~/tty-dotfiles && stow <package-name>` to create symlinks
+
+### Example: Adding scripts to ~/.local/bin/bin-mlj/
+
+To add a new script at `~/.local/bin/bin-mlj/mr/mr-sync-config.sh`:
+
+```bash
+# 1. Create the directory structure in tty-dotfiles
+mkdir -p ~/tty-dotfiles/bin-mlj/.local/bin/bin-mlj/mr
+
+# 2. Create/edit the script
+nvim ~/tty-dotfiles/bin-mlj/.local/bin/bin-mlj/mr/mr-sync-config.sh
+
+# 3. Make executable
+chmod +x ~/tty-dotfiles/bin-mlj/.local/bin/bin-mlj/mr/mr-sync-config.sh
+
+# 4. Deploy via stow (creates symlinks)
+cd ~/tty-dotfiles && stow bin-mlj
+```
+
+Result:
+```
+# Source (version controlled):
+~/tty-dotfiles/bin-mlj/.local/bin/bin-mlj/mr/mr-sync-config.sh
+
+# Symlink (created by stow):
+~/.local/bin/bin-mlj/mr/mr-sync-config.sh → ../../../tty-dotfiles/bin-mlj/.local/bin/bin-mlj/mr/mr-sync-config.sh
+```
+
+### Example: Adding config files
+
+```
+~/tty-dotfiles/darkman/
+├── .config/darkman/config.yaml      → symlinked to ~/.config/darkman/
+└── .local/share/darkman/theme.sh    → symlinked to ~/.local/share/darkman/
+```
+
+### Existing packages in tty-dotfiles
+
+Key packages:
+- `bin-mlj` - Scripts in `~/.local/bin/bin-mlj/` (mr/, mpv/, nvim/, etc.)
+- `shell` - Shell configuration (`~/.config/shell/`)
+- `systemd` - Systemd user services (`~/.config/systemd/user/`)
+
+To see all packages: `ls ~/tty-dotfiles/`
+
+### Stow commands
+
+```bash
+cd ~/tty-dotfiles
+
+# Preview what stow would do (dry run)
+stow -n -v <package>
+
+# Deploy a package (create symlinks)
+stow <package>
+
+# Remove symlinks for a package
+stow -D <package>
+
+# Restow (remove then recreate symlinks)
+stow -R <package>
+```
+
+### Exceptions (independent git repos)
+
+These directories in `~/.config/` have their own `.git` and are NOT managed via tty-dotfiles:
+
+* `~/.config/mpv/` - has its own git repository
+
+To find exceptions: `fd -t d -H "^\.git$" ~/.config --max-depth 2`
 
 ## Project Overview
 
@@ -162,3 +241,5 @@ User asks for "directory structure/tree"?
 Need just current directory?
   → USE: ls -la  (OK for single dir)
 ```
+
+<!-- vim: set tw=0 :-->

@@ -1,14 +1,18 @@
-# Git Add, Commit, Push (gac)
+# mr-commit
 
 Perform git add, commit, and push for repositories.
 
 ## Arguments
 
-$ARGUMENTS - Optional: One or more repository paths (space-separated)
+$ARGUMENTS - Optional: One or more repository paths (space-separated), or `.`
 
 ## Behavior
 
-### If ARGUMENTS provided:
+### If ARGUMENTS is `.` (dot):
+Process only the current working directory. Skip all grouped repository logic
+and mr status scanning. Just git add, commit, push on this project alone.
+
+### If other ARGUMENTS provided:
 Process only the specified repositories.
 
 ### Grouped Neovim Repositories
@@ -23,11 +27,23 @@ If ANY of these paths are specified (symlink or target), process ALL of them:
 
 Example: `/gac ~/.config/nvim` processes all four repos above.
 
+### Grouped XC Repositories
+If ANY of these paths are specified, process ALL of them:
+
+| Repository |
+|------------|
+| `~/utono/xc` |
+| `~/utono/nvim-glosses` |
+| `~/utono/nvim-glosses-qa` |
+
+Example: `/gac ~/utono/xc` processes all three repos above.
+
 ### If no ARGUMENTS provided:
-1. Run `mr status` from `/home/mlj` to find repositories with uncommitted changes
-2. Parse the output to identify which repos have changes
-3. Process each repo with changes
-4. Then check all repos in `~/utono/` and process any with uncommitted changes
+1. **Sync mr config first**: Run `~/.local/bin/bin-mlj/mr/mr-sync-config.sh` to ensure newly created repos are registered and deleted repos are cleaned up
+2. Run `mr status` from `/home/mlj` to find repositories with uncommitted changes
+3. Parse the output to identify which repos have changes
+4. Process each repo with changes
+5. Then check all repos in `~/utono/` and process any with uncommitted changes
 
 ## Instructions
 
@@ -76,4 +92,4 @@ include them in the summary:
 - /path/to/missing/repo: No such file or directory
 ```
 
-This helps identify stale entries in `.mrconfig` that need removal.
+Note: The pre-sync step should have already cleaned up stale entries, but report any remaining errors.
